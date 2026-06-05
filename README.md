@@ -149,6 +149,36 @@ list in `main()`, to restyle or drop fields (e.g. remove `sess`).
 
 ---
 
+## Alternatives & honest scope
+
+This is a small, single-file tool in a **crowded, mature space**. If you want a
+batteries-included status line, these are more complete:
+
+- [sirmalloc/ccstatusline](https://github.com/sirmalloc/ccstatusline) — the de-facto
+  standard: interactive TUI config, powerline, themes, multi-line, `npx`, session cost.
+- [ryoppippi/ccusage](https://github.com/ryoppippi/ccusage) — the canonical token/cost
+  analyzer, with status-line integration and per-model breakdowns.
+- [jarrodwatts/claude-hud](https://github.com/jarrodwatts/claude-hud) — full HUD plugin
+  (context, active tools, running agents).
+- [Haleclipse/CCometixLine](https://github.com/Haleclipse/CCometixLine) — Rust, ultra-fast.
+
+**Two things to know before adopting this one:**
+
+1. **Claude Code already exposes most of this on stdin.** Per the
+   [official docs](https://code.claude.com/docs/en/statusline), the payload includes
+   `context_window.total_input_tokens` / `total_output_tokens` / `used_percentage` /
+   `context_window_size`, plus `cost.total_cost_usd` (session cost, computed client-side).
+   A statusline showing model + context % + session cost is ~10 lines of `jq` with **no
+   transcript parsing**. This tool parses the transcript `.jsonl` instead, which is
+   slightly more fragile and exists mostly for historical reasons.
+2. **What's actually different here** is the **per-turn** breakdown (`In` / `Out` / `$`
+   for the current turn, not just the session). Most status lines show session totals and
+   context %, not a per-turn delta. If you don't care about per-turn cost, prefer one of
+   the tools above.
+
+In short: keep this if you specifically want the per-turn view in one tiny dependency-free
+file; otherwise the projects above will serve you better.
+
 ## License
 
 [MIT](LICENSE) © Aléaume Muller
